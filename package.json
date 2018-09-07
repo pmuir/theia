@@ -67,5 +67,8 @@
     "dev-packages/*",
     "packages/*",
     "examples/*"
-  ]
+  ],
+  "dependencies": {
+    "fibers": "^3.0.0"
+  }
 }

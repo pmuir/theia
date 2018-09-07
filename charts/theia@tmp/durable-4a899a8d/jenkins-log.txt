@@ -1,0 +1,6 @@
++ make tag
+cat: ../../VERSION: No such file or directory
+sed -i -e "s/version:.*/version: /" Chart.yaml
+sed -i -e "s|repository: .*|repository: 10.59.252.214:5000\/pmuir\/theia|" values.yaml
+sed -i -e "s/tag: .*/tag: /" values.yaml
+git add --all

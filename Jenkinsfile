@@ -58,11 +58,12 @@ pipeline {
           container('nodejs') {
             //sh "npm install"
             //sh "CI=true DISPLAY=:99 npm test"
-            sh "yarn"
+            // Some dep doesn't like having a file called VERSION
+            sh "yarn && mv JX-VERSION VERSION"
 
-            sh 'export VERSION=`cat JX-VERSION` && skaffold build -f skaffold.yaml'
+            sh 'export VERSION=`cat VERSION` && skaffold build -f skaffold.yaml'
 
-            sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:\$(cat JX-VERSION)"
+            sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:\$(cat VERSION)"
           }
         }
       }
@@ -73,13 +74,13 @@ pipeline {
         steps {
           dir ('./charts/theia') {
             container('nodejs') {
-              sh 'jx step changelog --version v\$(cat ../../JX-VERSION)'
+              sh 'jx step changelog --version v\$(cat ../../VERSION)'
 
               // release the helm chart
               sh 'jx step helm release'
 
               // promote through all 'Auto' promotion Environments
-              sh 'jx promote -b --all-auto --timeout 1h --version \$(cat ../../JX-VERSION)'
+              sh 'jx promote -b --all-auto --timeout 1h --version \$(cat ../../VERSION)'
             }
           }
         }

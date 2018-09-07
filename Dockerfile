@@ -1,8 +1,8 @@
-FROM node:9-slim
-ENV PORT 8080
-EXPOSE 8080
+FROM node:9
 WORKDIR /usr/src/app
 COPY . .
+EXPOSE 8080
+WORKDIR /usr/src/app/examples/browser
 ENV SHELL /bin/bash
-ENV USE_LOCAL_GIT true
-ENTRYPOINT [ "yarn", "theia", "start", "/home/project", "--hostname=0.0.0.0", "--port=8080" ]
+RUN mkdir /home/project
+CMD yarn run start /home/project --hostname 0.0.0.0 --port 8080

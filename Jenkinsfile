@@ -48,7 +48,7 @@ pipeline {
 
             sh "jx step git credentials"
             // so we can retrieve the version in later steps
-            sh "echo \$(jx-release-version) > VERSION"
+            sh "echo \$(jx-release-version) > JX-VERSION"
           }
           dir ('./charts/theia') {
             container('nodejs') {
@@ -60,9 +60,9 @@ pipeline {
             //sh "CI=true DISPLAY=:99 npm test"
             sh "yarn"
 
-            sh 'export VERSION=`cat VERSION` && skaffold build -f skaffold.yaml'
+            sh 'export VERSION=`cat JX-VERSION` && skaffold build -f skaffold.yaml'
 
-            sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:\$(cat VERSION)"
+            sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:\$(cat JX-VERSION)"
           }
         }
       }
@@ -73,13 +73,13 @@ pipeline {
         steps {
           dir ('./charts/theia') {
             container('nodejs') {
-              sh 'jx step changelog --version v\$(cat ../../VERSION)'
+              sh 'jx step changelog --version v\$(cat ../../JX-VERSION)'
 
               // release the helm chart
               sh 'jx step helm release'
 
               // promote through all 'Auto' promotion Environments
-              sh 'jx promote -b --all-auto --timeout 1h --version \$(cat ../../VERSION)'
+              sh 'jx promote -b --all-auto --timeout 1h --version \$(cat ../../JX-VERSION)'
             }
           }
         }
